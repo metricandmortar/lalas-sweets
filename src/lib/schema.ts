@@ -1,5 +1,6 @@
 import {
   CATERING_PAGE_CONTENT,
+  PRODUCT_CATEGORIES,
   PRODUCTS,
   SITE,
   type FaqItem,
@@ -79,7 +80,8 @@ export function websiteSchema(): JsonLd {
 }
 
 // The full catalog as an ItemList of Products, linked back to the bakery.
-// Offers are omitted until prices are published on the menu.
+// Offers are omitted until prices are published on the menu. Packaging and
+// minimum-order rules ride along in the description, as they do on-page.
 export function menuSchema(): JsonLd {
   return {
     "@context": "https://schema.org",
@@ -93,9 +95,12 @@ export function menuSchema(): JsonLd {
       item: {
         "@type": "Product",
         name: product.name,
-        description: product.shortDescription,
-        image: absolute(product.image.src),
-        category: product.category,
+        description: product.orderNote
+          ? `${product.shortDescription.replace(/[.!]?$/, ".")} ${product.orderNote}`
+          : product.shortDescription,
+        image: [product.image, ...(product.gallery ?? [])].map((image) => absolute(image.src)),
+        url: absolute(`/menu#${product.category}`),
+        category: PRODUCT_CATEGORIES[product.category],
         brand: { "@type": "Brand", name: SITE.name },
         manufacturer: { "@id": BAKERY_ID },
       },

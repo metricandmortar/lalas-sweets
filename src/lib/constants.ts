@@ -37,7 +37,7 @@ export const SITE: Site = {
   tagline: "Made with love for His Glory",
   mission: "Sharing the Love of God through people's love of sweets.",
   description:
-    "Homemade bakery in Wahiawa, Oahu — cheesecake cookie cups, parfaits, cinnamon bagel crisps, and cookies made to order for gifts, dessert catering, and pop-ups.",
+    "Homemade bakery in Wahiawa, Oahu — cheesecake cookie cups, brownie cheesecake cups, parfaits, cinnamon bagel crisps, and cookies made to order for gifts, dessert catering, and pop-ups.",
   phone: "(808) 375-8713",
   phoneTel: "+18083758713",
   email: "lorelaisamson@gmail.com",
@@ -82,6 +82,20 @@ export const LEGAL_LINKS: NavLink[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Ordering rules — client-supplied packaging minimums. Shown on product cards,
+// the menu, catering FAQ, JSON-LD, and /llms.txt from this one place.
+// Ordering stays inquiry-only (no online checkout) so the client controls her
+// monthly order capacity.
+// ---------------------------------------------------------------------------
+
+export const ORDER_RULES = {
+  parfaits: "Catering orders only • Minimum 12 per flavor.",
+  cheesecakeCups: "Party Packs of 12 or 24 • Regular orders in packs of 4.",
+  capacity:
+    "Orders are confirmed by message — there's no online checkout — and only a limited number are taken each month.",
+};
+
+// ---------------------------------------------------------------------------
 // Trust signals — every claim here is grounded in client-supplied facts
 // (homemade, local, made to order, sales channels, faith mission). No
 // ratings or reviews until the client provides real, shareable ones.
@@ -99,17 +113,17 @@ export const TRUST_BADGES: TrustBadge[] = [
   {
     icon: "map-pin",
     title: `Local to ${SITE.location}`,
-    subtitle: "Proudly homemade on the island",
+    subtitle: "Baked at home in Wahiawa",
   },
   {
     icon: "chef-hat",
-    title: "Small-batch & made to order",
-    subtitle: "Baked fresh for every order",
+    title: "Made to order",
+    subtitle: "Nothing sits on a shelf",
   },
   {
     icon: "party",
-    title: "Catering, favors & pop-ups",
-    subtitle: "Sweets for every celebration",
+    title: "Catering & party packs",
+    subtitle: "Parfaits by the dozen, cups by 12 or 24",
   },
   {
     icon: "heart",
@@ -130,23 +144,26 @@ export interface ProductImage {
   isPlaceholder: boolean;
 }
 
-export type ProductCategory = "snacks" | "cookie-cups" | "parfaits" | "cookies";
+export type ProductCategory = "cookies" | "parfaits" | "cheesecake-cups" | "snacks";
 
 export const PRODUCT_CATEGORIES: Record<ProductCategory, string> = {
-  snacks: "Snacks",
-  "cookie-cups": "Cookie Cups",
-  parfaits: "Parfaits",
   cookies: "Cookies",
+  parfaits: "Parfaits",
+  "cheesecake-cups": "Cheesecake Cups",
+  snacks: "Snacks",
 };
 
 export interface Product {
   slug: string;
   name: string;
   category: ProductCategory;
+  // Client's exact wording — do not edit without her sign-off.
   shortDescription: string;
   // Display-ready price (e.g. "$12 / dozen"). Left unset until the client
   // confirms pricing — cards fall back to "Pricing on request".
   price?: string;
+  // Packaging / minimum-order rule shown as a note on the card.
+  orderNote?: string;
   image: ProductImage;
   // Additional angles of the same item (e.g. a single-cookie close-up).
   gallery?: ProductImage[];
@@ -155,140 +172,49 @@ export interface Product {
   badge?: string;
 }
 
+// Catalog order is the client's menu order.
 export const PRODUCTS: Product[] = [
-  {
-    slug: "cinnamon-bagel-crisps",
-    name: "Cinnamon Bagel Crisps",
-    category: "snacks",
-    shortDescription:
-      "Crunchy, golden bagel crisps dusted in cinnamon sugar — a homemade snack that disappears fast.",
-    image: {
-      src: "/images/bagel-crisps.jpg",
-      alt: "Cinnamon Bagel Crisps by Lala's Sweets",
-      isPlaceholder: true,
-    },
-    isTopSeller: true,
-  },
-  {
-    slug: "cheesecake-cookie-cups",
-    name: "Cheesecake Cookie Cups",
-    category: "cookie-cups",
-    shortDescription:
-      "A soft-baked cookie cup filled with creamy cheesecake — two favorite desserts in one bite.",
-    image: {
-      src: "/images/cookie-cups.jpg",
-      alt: "Cheesecake Cookie Cups by Lala's Sweets",
-      isPlaceholder: true,
-    },
-    isTopSeller: true,
-  },
-  {
-    slug: "cookie-cup-gift-pack",
-    name: "Cookie Cup Gift Pack",
-    category: "cookie-cups",
-    shortDescription:
-      "Cheesecake cookie cups boxed and sealed with the Lala's Sweets label — ready to gift, share, or bring to the party.",
-    image: {
-      src: "/images/cookie-cups-packaged.jpg",
-      alt: "Cheesecake cookie cups packaged in a clear box with the Lala's Sweets label",
-      isPlaceholder: true,
-    },
-    isTopSeller: false,
-    badge: "Great for Gifting",
-  },
-  {
-    slug: "parfaits",
-    name: "Parfaits",
-    category: "parfaits",
-    shortDescription:
-      "Layered dessert parfaits made to order — sweet, creamy, and perfect for sharing or treating yourself.",
-    image: {
-      src: "/images/parfaits.jpg",
-      alt: "Layered dessert parfaits by Lala's Sweets",
-      isPlaceholder: true,
-    },
-    isTopSeller: true,
-  },
-  {
-    slug: "biscoff-parfait",
-    name: "Biscoff Parfait",
-    category: "parfaits",
-    shortDescription:
-      "Creamy layers with spiced Biscoff cookie crumble — warm, caramelized, and irresistible.",
-    image: {
-      src: "/images/parfait-biscoff.jpg",
-      alt: "Biscoff parfait by Lala's Sweets",
-      isPlaceholder: true,
-    },
-    isTopSeller: false,
-  },
-  {
-    slug: "cookies-and-cream-parfait",
-    name: "Cookies & Cream Parfait",
-    category: "parfaits",
-    shortDescription:
-      "A classic favorite — chocolate cookie pieces layered with sweet, fluffy cream.",
-    image: {
-      src: "/images/parfait-cookies-and-cream.jpg",
-      alt: "Cookies and cream parfait by Lala's Sweets",
-      isPlaceholder: true,
-    },
-    isTopSeller: false,
-  },
-  {
-    slug: "smores-parfait",
-    name: "S'mores Parfait",
-    category: "parfaits",
-    shortDescription:
-      "Campfire nostalgia in a cup — graham, chocolate, and marshmallow layered to perfection.",
-    image: {
-      src: "/images/parfait-smores.jpg",
-      alt: "S'mores parfait by Lala's Sweets",
-      isPlaceholder: true,
-    },
-    isTopSeller: false,
-  },
   {
     slug: "chocolate-chip-cookies",
     name: "Chocolate Chip Cookies",
     category: "cookies",
     shortDescription:
-      "The timeless classic, baked from scratch with plenty of chocolate in every bite.",
+      "Soft, chewy inside with a crisp outside, loaded with milk chocolate chips in every bite.",
     image: {
       src: "/images/cookies-chocolate-chip.jpg",
-      alt: "Chocolate chip cookies by Lala's Sweets",
+      alt: "Homemade chocolate chip cookies from Lala's Sweets in Wahiawa, Oahu",
       isPlaceholder: true,
     },
     isTopSeller: false,
   },
   {
-    slug: "cinnamon-glazed-cookies",
-    name: "Cinnamon Glazed Cookies",
+    slug: "fruity-pebble-cookies",
+    name: "Fruity Pebble Cookies",
     category: "cookies",
     shortDescription:
-      "Cinnamon-chip cookies finished with a sweet vanilla glaze drizzle.",
+      "Buttery, shortbread-style cookies packed with colorful Fruity Pebbles for a sweet, crunchy twist!",
     image: {
-      src: "/images/cookies-cinnamon-glazed.jpg",
-      alt: "Glazed cinnamon cookies cooling on a wire rack",
+      src: "/images/cookie-fruity-pebbles.jpg",
+      alt: "Fruity Pebble shortbread cookie baked by Lala's Sweets on Oahu",
       isPlaceholder: true,
     },
     isTopSeller: false,
   },
   {
-    slug: "white-chocolate-macadamia-cookies",
-    name: "White Chocolate Macadamia Cookies",
+    slug: "white-chocolate-macadamia-nut-cookies",
+    name: "White Chocolate Macadamia Nut Cookies",
     category: "cookies",
     shortDescription:
-      "Buttery cookies loaded with white chocolate and macadamia nuts — a Hawaii favorite.",
+      "Soft, buttery cookies filled with creamy white chocolate chips and crunchy macadamia nuts.",
     image: {
       src: "/images/cookies-white-chocolate-macadamia.jpg",
-      alt: "White chocolate macadamia cookies by Lala's Sweets",
+      alt: "White chocolate macadamia nut cookies homemade in Wahiawa, Hawaii",
       isPlaceholder: true,
     },
     gallery: [
       {
         src: "/images/cookie-white-chocolate-macadamia-single.jpg",
-        alt: "Close-up of a single white chocolate macadamia cookie",
+        alt: "Close-up of a single white chocolate macadamia nut cookie",
         isPlaceholder: true,
       },
     ],
@@ -296,17 +222,158 @@ export const PRODUCTS: Product[] = [
     badge: "Island Favorite",
   },
   {
-    slug: "fruity-pebbles-cookies",
-    name: "Fruity Pebbles Cookies",
+    slug: "churro-cookies",
+    name: "Churro Cookie",
     category: "cookies",
     shortDescription:
-      "Colorful, crunchy, and fun — soft cookies packed with Fruity Pebbles cereal.",
+      "The perfect soft cookie baked and coated in cinnamon sugar, bringing you all the delicious flavors of a classic churro.",
+    // Closest available photo (cinnamon cookies on a cooling rack) until a
+    // dedicated churro cookie shot is supplied.
     image: {
-      src: "/images/cookie-fruity-pebbles.jpg",
-      alt: "Fruity Pebbles cookies by Lala's Sweets",
+      src: "/images/cookies-cinnamon-glazed.jpg",
+      alt: "Cinnamon churro-style cookies cooling on a rack at Lala's Sweets, Wahiawa",
       isPlaceholder: true,
     },
     isTopSeller: false,
+  },
+  {
+    slug: "oreo-parfait",
+    name: "Oreo Parfait",
+    category: "parfaits",
+    shortDescription:
+      "Layers of Oreo cookie crust, creamy homemade cheesecake filling, Oreo pudding, and fluffy Cool Whip.",
+    orderNote: ORDER_RULES.parfaits,
+    image: {
+      src: "/images/parfait-cookies-and-cream.jpg",
+      alt: "Oreo cheesecake parfait in a Lala's Sweets labeled cup, Oahu dessert catering",
+      isPlaceholder: true,
+    },
+    isTopSeller: false,
+  },
+  {
+    slug: "cookie-butter-parfait",
+    name: "Cookie Butter Parfait",
+    category: "parfaits",
+    shortDescription:
+      "Layers of cookie butter goodness, creamy homemade cookie butter cheesecake, vanilla pudding, and fluffy whipped topping for the perfect sweet treat.",
+    orderNote: ORDER_RULES.parfaits,
+    image: {
+      src: "/images/cookie-butter-parfait.jpg",
+      alt: "Cookie butter cheesecake parfait with vanilla pudding layers, made in Wahiawa, Oahu",
+      isPlaceholder: false,
+    },
+    gallery: [
+      {
+        src: "/images/parfait-biscoff.jpg",
+        alt: "Cookie butter parfait sealed with the Lala's Sweets label",
+        isPlaceholder: false,
+      },
+      {
+        src: "/images/cookie-butter-parfait-held.jpg",
+        alt: "Cookie butter parfait held up outdoors in Wahiawa",
+        isPlaceholder: false,
+      },
+      {
+        src: "/images/cookie-butter-parfait-side.jpg",
+        alt: "Side view of a cookie butter parfait showing its cheesecake and pudding layers",
+        isPlaceholder: false,
+      },
+    ],
+    isTopSeller: false,
+  },
+  {
+    slug: "strawberry-shortcake-parfait",
+    name: "Strawberry Shortcake Parfait",
+    category: "parfaits",
+    shortDescription:
+      "Layers of sweet fresh strawberries, soft cake, creamy homemade cheesecake filling, and fluffy whipped topping.",
+    orderNote: ORDER_RULES.parfaits,
+    image: {
+      src: "/images/strawberry-shortcake-parfait.jpg",
+      alt: "Strawberry shortcake cheesecake parfait topped with a fresh strawberry, Lala's Sweets Oahu",
+      isPlaceholder: false,
+    },
+    gallery: [
+      {
+        src: "/images/parfaits.jpg",
+        alt: "Strawberry shortcake parfait sealed with the Lala's Sweets label",
+        isPlaceholder: false,
+      },
+      {
+        src: "/images/strawberry-shortcake-parfait-held.jpg",
+        alt: "Strawberry shortcake parfait held up outdoors in Wahiawa",
+        isPlaceholder: false,
+      },
+      {
+        src: "/images/strawberry-shortcake-parfait-held-2.jpg",
+        alt: "Strawberry shortcake parfait held up against an Oahu sky",
+        isPlaceholder: false,
+      },
+      {
+        src: "/images/strawberry-shortcake-parfait-porch.jpg",
+        alt: "Strawberry shortcake parfait on a wooden porch table in Wahiawa",
+        isPlaceholder: false,
+      },
+    ],
+    isTopSeller: true,
+  },
+  {
+    slug: "cheesecake-cookie-cups",
+    name: "Cheesecake Cookie Cups",
+    category: "cheesecake-cups",
+    shortDescription:
+      "Chocolate chip cookie cups filled with creamy, homemade cheesecake for the perfect bite-sized dessert.",
+    orderNote: ORDER_RULES.cheesecakeCups,
+    image: {
+      src: "/images/cookie-cups-party-pack.jpg",
+      alt: "24-pack party box of cheesecake cookie cups from Lala's Sweets, Wahiawa, Oahu",
+      isPlaceholder: false,
+    },
+    gallery: [
+      {
+        src: "/images/cookie-cups-box.jpg",
+        alt: "Top-down view of a 24-count box of cheesecake cookie cups",
+        isPlaceholder: false,
+      },
+      {
+        src: "/images/cookie-cups-packaged.jpg",
+        alt: "Regular 4-pack of cheesecake cookie cups with the Lala's Sweets label",
+        isPlaceholder: false,
+      },
+      {
+        src: "/images/cookie-cups.jpg",
+        alt: "Cheesecake cookie cups cooling on a wire rack",
+        isPlaceholder: false,
+      },
+    ],
+    isTopSeller: true,
+  },
+  {
+    slug: "brownie-cheesecake-cups",
+    name: "Brownie Cheesecake Cups",
+    category: "cheesecake-cups",
+    shortDescription:
+      "Rich, fudgy brownie cups filled with homemade cheesecake for the ultimate chocolatey treat.",
+    orderNote: ORDER_RULES.cheesecakeCups,
+    image: {
+      src: "/images/brownie-cheesecake-cups.jpg",
+      alt: "24-pack party box of brownie cheesecake cups from Lala's Sweets on Oahu",
+      isPlaceholder: false,
+    },
+    isTopSeller: false,
+  },
+  {
+    slug: "cinnamon-bagel-crisps",
+    name: "Cinnamon Bagel Crisps",
+    category: "snacks",
+    shortDescription:
+      "Thin, crunchy bagel chips with the perfect amount of cinnamon sugar for the perfect snack.",
+    image: {
+      src: "/images/bagel-crisps.jpg",
+      alt: "Cinnamon sugar bagel crisps homemade by Lala's Sweets in Wahiawa, Hawaii",
+      isPlaceholder: true,
+    },
+    isTopSeller: true,
   },
 ];
 
@@ -322,23 +389,18 @@ export const SALES_CHANNELS: SalesChannel[] = [
     slug: "catering",
     name: "Catering",
     shortDescription:
-      "Dessert spreads for parties, church gatherings, showers, and office events — homemade and beautifully presented.",
+      "Parfaits by the dozen, cheesecake cup party packs, and cookies for birthdays, showers, church gatherings, and office events.",
   },
   {
     slug: "direct-to-consumer",
-    name: "Direct-to-Consumer",
+    name: "Personal orders",
     shortDescription:
-      "Order your favorites directly from Lala's Sweets for gifting, celebrations, or just because.",
+      "Cookies, cheesecake cups in packs of 4, and bagel crisps for a gift, a birthday, or a regular Tuesday.",
   },
   {
     slug: "events-pop-ups",
-    name: "Events & Pop-Ups",
-    shortDescription: `Find Lala's Sweets at local pop-ups and community events around ${SITE.address.island}.`,
-    image: {
-      src: "/images/pop-up-event.jpg",
-      alt: "Lala's Sweets pop-up event table",
-      isPlaceholder: true,
-    },
+    name: "Pop-ups",
+    shortDescription: `Look for the Lala's Sweets table at markets and community events around ${SITE.address.island}.`,
   },
 ];
 
@@ -394,16 +456,18 @@ export interface HeroContent {
 }
 
 export const HERO_CONTENT: HeroContent = {
-  eyebrow: `Homemade in ${SITE.location}`,
-  heading: "Homemade sweets,",
-  headingAccent: "baked with love.",
-  paragraph: `Small-batch cookie cups, parfaits, and bagel crisps made by hand right here in ${SITE.location} — ${SITE.mission.charAt(0).toLowerCase()}${SITE.mission.slice(1)}`,
-  primaryCta: { label: "Explore Menu", href: "/menu" },
-  secondaryCta: { label: "Inquire for Catering", href: "/catering" },
+  // Location lives in the eyebrow so the client's headline stays verbatim.
+  eyebrow: `${SITE.address.locality} · ${SITE.address.island}, Hawaiʻi · Made to Order`,
+  heading: "Homemade treats,",
+  headingAccent: "lots of love.",
+  paragraph:
+    "Satisfying your sweet tooth with homemade treats, freshly made to order just for you. Every treat is created to bring joy to your everyday moments and special occasions!",
+  primaryCta: { label: "See the Menu", href: "/menu" },
+  secondaryCta: { label: "Catering Orders", href: "/catering" },
   image: {
-    src: "/images/parfaits.jpg",
-    alt: "A strawberry parfait in a Lala's Sweets branded cup",
-    isPlaceholder: true,
+    src: "/images/strawberry-shortcake-parfait.jpg",
+    alt: "Strawberry shortcake parfait from Lala's Sweets, a homemade bakery in Wahiawa, Oahu",
+    isPlaceholder: false,
   },
   badge: {
     title: "Made to order",
@@ -419,11 +483,11 @@ export interface FeaturedProductsContent {
 }
 
 export const FEATURED_PRODUCTS_CONTENT: FeaturedProductsContent = {
-  eyebrow: "Customer Favorites",
-  heading: "Our Top Sellers",
+  eyebrow: "Most Requested",
+  heading: "What people order most",
   paragraph:
-    "The treats our customers come back for again and again — perfect for gifting, sharing, or keeping all to yourself.",
-  viewAllCta: { label: "View the Full Menu", href: "/menu" },
+    "Cheesecake cookie cups, parfaits, and cinnamon bagel crisps are the ones customers ask for again. The rest of the menu is one click away.",
+  viewAllCta: { label: "See all ten treats", href: "/menu" },
 };
 
 export interface StoryPillar {
@@ -443,33 +507,35 @@ export interface StoryContent {
 }
 
 export const STORY_CONTENT: StoryContent = {
-  eyebrow: "Our Story",
-  heading: "More than sweets — a little love in every bite.",
+  eyebrow: `Our Story · ${SITE.location}`,
+  heading: "A love for baking, and a heart for sharing it.",
+  // Client's exact words.
   paragraphs: [
-    `Lala's Sweets started with a simple passion for baking and a heart for people. Every treat is homemade in small batches in ${SITE.address.locality}, using recipes made to share with family, friends, and neighbors across ${SITE.address.island}.`,
-    `Our mission is simple: ${SITE.mission} Whether it's a celebration, a church gathering, or a sweet pick-me-up, each order is made with care — and ${SITE.tagline.charAt(0).toLowerCase()}${SITE.tagline.slice(1)}.`,
+    "Lala’s Sweets started with a love for baking and a heart for sharing that with others. What began as a simple passion has grown into a little business where homemade treats make life’s sweetest moments even more special.",
+    "My mission is simple: to share the love of God through people’s love of sweets. Every order is made with care, baked with love, and prepared with the hope of bringing a little extra joy to someone’s day.",
+    "Whether you’re celebrating a special occasion, gathering with loved ones, or simply craving something sweet, I’m so grateful to be a small part of your moments. Thank you for supporting my small business and allowing me to share a little piece of my heart with you!",
   ],
   pillars: [
     {
       title: "Homemade",
-      description: "Baked by hand in small batches — never mass-produced.",
+      description: "Baked by hand in a home kitchen, one order at a time.",
     },
     {
       title: "Local",
-      description: `Proudly made in ${SITE.address.locality} for our ${SITE.address.island} community.`,
+      description: `Made in ${SITE.address.locality} for friends and neighbors across ${SITE.address.island}.`,
     },
     {
       title: "Made with Love",
-      description: "Every order is a chance to share joy and faith.",
+      description: "Every order is a chance to share God's love.",
     },
   ],
   image: {
-    src: "/images/cookies-cinnamon-glazed.jpg",
-    alt: "Freshly glazed homemade cookies cooling on a wire rack",
-    isPlaceholder: true,
+    src: "/images/cookie-butter-parfait-porch.jpg",
+    alt: "Cookie butter parfait on a wooden porch table in Wahiawa, Oahu",
+    isPlaceholder: false,
   },
-  channelsEyebrow: "Ways to Enjoy",
-  channelsHeading: "However you celebrate, we'll be there.",
+  channelsEyebrow: "Ways to Order",
+  channelsHeading: "Three ways to get your treats",
   cta: { label: "Start an Order", href: "/contact" },
 };
 
@@ -493,41 +559,40 @@ export interface MenuPageContent {
 
 export const MENU_PAGE_CONTENT: MenuPageContent = {
   hero: {
-    eyebrow: "The Menu",
-    heading: "Something sweet",
-    headingAccent: "for every occasion.",
-    paragraph: `Everything is homemade in small batches in ${SITE.location} and made to order. Browse our favorites below, then send an inquiry for pricing and availability.`,
+    eyebrow: `The Menu · ${SITE.location}`,
+    heading: "Cookies, parfaits,",
+    headingAccent: "cheesecake cups & more.",
+    paragraph: `Ten treats, all homemade in ${SITE.address.locality} and made to order. Parfaits are for catering orders (12 per flavor minimum), and cheesecake cups come in packs of 4 or party packs of 12 or 24. Send an inquiry for pricing and pickup dates.`,
   },
   categoryNavLabel: "Menu categories",
   // Display order of the catalog sections and category tabs.
   categories: [
     {
-      id: "snacks",
-      label: PRODUCT_CATEGORIES.snacks,
-      description: "Crunchy, snackable, and impossible to stop eating.",
-    },
-    {
-      id: "cookie-cups",
-      label: PRODUCT_CATEGORIES["cookie-cups"],
-      description: "Soft-baked cookie cups filled with creamy cheesecake.",
+      id: "cookies",
+      label: PRODUCT_CATEGORIES.cookies,
+      description: "Four flavors, baked from scratch.",
     },
     {
       id: "parfaits",
       label: PRODUCT_CATEGORIES.parfaits,
-      description: "Layered, creamy, and made to order in a variety of flavors.",
+      description: ORDER_RULES.parfaits,
     },
     {
-      id: "cookies",
-      label: PRODUCT_CATEGORIES.cookies,
-      description: "Classic and creative cookies, baked from scratch.",
+      id: "cheesecake-cups",
+      label: PRODUCT_CATEGORIES["cheesecake-cups"],
+      description: ORDER_RULES.cheesecakeCups,
+    },
+    {
+      id: "snacks",
+      label: PRODUCT_CATEGORIES.snacks,
+      description: "Cinnamon sugar bagel chips, bagged for snacking.",
     },
   ],
   allergenNotice:
     "Allergen notice: our treats are made in a home kitchen that also handles common allergens, including wheat, dairy, eggs, and tree nuts (such as macadamia nuts). Please ask about ingredients before ordering.",
   ctaBand: {
-    heading: "Ready to treat yourself — or a crowd?",
-    paragraph:
-      "Send us a quick inquiry with what you'd like and when you need it, and we'll get back to you with pricing and availability.",
+    heading: "Know what you'd like?",
+    paragraph: `Send the treats, quantities, and the date you need them. ${ORDER_RULES.capacity}`,
     primaryCta: { label: "Send an Inquiry", href: "/contact" },
     showPhone: true,
   },
@@ -594,14 +659,14 @@ export const CATERING_PAGE_CONTENT: CateringPageContent = {
     eyebrow: `Catering & Events · ${SITE.address.island}`,
     heading: "Homemade desserts",
     headingAccent: "for your celebration.",
-    paragraph: `From birthday parties and baby showers to church gatherings and office events, Lala's Sweets brings a homemade dessert spread your guests will remember — made with love in ${SITE.location}.`,
+    paragraph: `Parfaits by the dozen, cheesecake cup party packs, and trays of cookies for birthdays, baby showers, church gatherings, and office events — homemade in ${SITE.location}.`,
     primaryCta: { label: "Request a Catering Quote", href: cateringInquiryHref() },
   },
   packages: {
     eyebrow: "Catering Options",
-    heading: "Choose your sweet spread",
+    heading: "Pick a starting point",
     paragraph:
-      "Every order is customized to your event, guest count, and favorite treats. Tell us what you're planning and we'll put together a quote.",
+      "Every catering order is quoted to your event, guest count, and flavors. These are the three most common setups.",
     idealForLabel: "Ideal for",
     quoteLabel: "Custom quote",
     ctaLabel: "Request a Quote",
@@ -610,50 +675,50 @@ export const CATERING_PAGE_CONTENT: CateringPageContent = {
         slug: "dessert-table",
         name: "Dessert Table",
         description:
-          "A curated spread of our most-loved treats — cookie cups, parfaits, cookies, and bagel crisps — to be the sweet centerpiece of your event.",
+          "A mix of parfaits, cheesecake cups, cookies, and bagel crisps set out as the dessert spread for your event.",
         idealFor: "Birthdays, showers, graduations & weddings",
         highlights: [
+          "Parfaits in Oreo, cookie butter & strawberry shortcake",
+          "Minimum 12 parfaits per flavor",
           "Mix and match from the full menu",
-          "Sized to your guest count",
-          "Flavors chosen to match your event",
         ],
         image: {
           src: "/images/parfait-cookies-and-cream.jpg",
-          alt: "Cookies and cream parfaits ready for a dessert table",
+          alt: "Oreo parfait for a dessert catering table on Oahu",
           isPlaceholder: true,
         },
       },
       {
         slug: "party-trays",
-        name: "Party & Office Trays",
+        name: "Party Packs",
         description:
-          "Generous trays of fresh-baked cookies and cookie cups that are easy to set out and easy to share.",
+          "Cheesecake cookie cups or brownie cheesecake cups boxed in 12s or 24s — easy to set out and easy to share.",
         idealFor: "Office meetings, church gatherings & potlucks",
         highlights: [
-          "Crowd-pleasing classics",
-          "Simple to serve and share",
-          "Great for recurring events",
+          "Boxes of 12 or 24",
+          "Cookie cups, brownie cups, or both",
+          "Add a tray of cookies",
         ],
         image: {
-          src: "/images/cookies-chocolate-chip.jpg",
-          alt: "A batch of homemade chocolate chip cookies",
-          isPlaceholder: true,
+          src: "/images/cookie-cups-party-pack.jpg",
+          alt: "24-count party pack of cheesecake cookie cups for Oahu catering",
+          isPlaceholder: false,
         },
       },
       {
         slug: "favors-gift-packs",
         name: "Favors & Gift Packs",
         description:
-          "Individually packaged treats sealed with the Lala's Sweets label — a thoughtful thank-you guests can take home.",
+          "Treats packed in 4s and sealed with the Lala's Sweets label — a thank-you guests can take home.",
         idealFor: "Wedding & shower favors, client and staff gifts",
         highlights: [
-          "Individually packaged",
+          "Packs of 4 cheesecake cups",
           "Branded Lala's Sweets labels",
-          "Perfect for gifting in bulk",
+          "Ordered in bulk for events",
         ],
         image: {
           src: "/images/cookie-cups-packaged.jpg",
-          alt: "Cookie cups packaged in a clear box with the Lala's Sweets label",
+          alt: "4-pack of cheesecake cookie cups sealed with the Lala's Sweets label",
           isPlaceholder: true,
         },
       },
@@ -663,30 +728,30 @@ export const CATERING_PAGE_CONTENT: CateringPageContent = {
     eyebrow: "Events & Pop-Ups",
     heading: "Bring Lala's Sweets to your next event",
     paragraphs: [
-      `Hosting a market, fundraiser, church event, or community gathering on ${SITE.address.island}? Lala's Sweets pop-ups bring a table of homemade treats right to your guests.`,
-      "Want to find us at an upcoming pop-up? Follow along on Instagram for dates, locations, and new flavors.",
+      `Hosting a market, fundraiser, church event, or community gathering on ${SITE.address.island}? A Lala's Sweets pop-up brings a table of homemade treats to your guests.`,
+      "Want to find us at an upcoming pop-up? Dates, locations, and new flavors go up on Instagram first.",
     ],
     bookCta: { label: "Book a Pop-Up", href: POP_UP_INQUIRY_HREF },
     instagramLabel: `Follow ${SITE.instagram.handle}`,
   },
   process: {
     eyebrow: "How It Works",
-    heading: "Booking is as easy as 1-2-3",
+    heading: "How catering orders work",
     steps: [
       {
         title: "Reach out",
         description:
-          "Send an inquiry or give us a call with your event date, guest count, and the treats you love.",
+          "Send an inquiry or call with your event date, guest count, and the treats you'd like.",
       },
       {
-        title: "Customize",
+        title: "Confirm",
         description:
-          "We'll help you build the perfect menu and confirm your quote, pickup details, and timing.",
+          "We'll settle flavors, quantities, your quote, and the pickup time — all by message.",
       },
       {
-        title: "Celebrate",
+        title: "Pick up",
         description:
-          "Your sweets are made fresh for your event — all that's left is to enjoy them with your guests.",
+          "Your order is made fresh for your date and ready at the agreed pickup time.",
       },
     ],
   },
@@ -698,15 +763,24 @@ export const CATERING_PAGE_CONTENT: CateringPageContent = {
     items: [
       {
         question: "Where is Lala's Sweets located?",
-        answer: `Lala's Sweets is a homemade bakery based in ${SITE.address.locality}, on the island of ${SITE.address.island}, ${SITE.address.regionName}. Every order is baked to order, and pickup details are confirmed when you order.`,
+        answer: `Lala's Sweets is a homemade bakery based in ${SITE.address.locality}, on the island of ${SITE.address.island}, ${SITE.address.regionName}. Every order is made to order, and pickup details are confirmed when you order.`,
       },
       {
         question: "How do I place an order?",
-        answer: `Send an inquiry through our contact form, call or text ${SITE.phone}, email ${SITE.email}, or message us on Instagram at ${SITE.instagram.handle}. Your order is confirmed once we've agreed on the details together.`,
+        answer: `Send an inquiry through our contact form, call or text ${SITE.phone}, email ${SITE.email}, or message us on Instagram at ${SITE.instagram.handle}. There's no online checkout — your order is confirmed once we've agreed on the details together.`,
+      },
+      {
+        question: "Can I order parfaits for just a few people?",
+        answer: `Parfaits are made for catering orders only, with a minimum of 12 per flavor. Flavors are Oreo, Cookie Butter, and Strawberry Shortcake.`,
+      },
+      {
+        question: "How are the cheesecake cups sold?",
+        answer:
+          "Cheesecake Cookie Cups and Brownie Cheesecake Cups come in packs of 4 for regular orders, or party packs of 12 or 24.",
       },
       {
         question: "Do you cater events?",
-        answer: `Yes. Lala's Sweets caters birthdays, baby and bridal showers, weddings, graduations, church gatherings, and office events on ${SITE.address.island} with dessert tables, party and office trays, and individually packaged favors. Every catering order is a custom quote.`,
+        answer: `Yes. Lala's Sweets caters birthdays, baby and bridal showers, weddings, graduations, church gatherings, and office events on ${SITE.address.island} with dessert tables, cheesecake cup party packs, and packaged favors. Every catering order is a custom quote.`,
       },
       {
         question: "Can Lala's Sweets do a pop-up at my event?",
@@ -714,14 +788,14 @@ export const CATERING_PAGE_CONTENT: CateringPageContent = {
           "Yes. We bring pop-up tables of homemade treats to markets, fundraisers, church events, and community gatherings. Send a pop-up inquiry with your event date and details.",
       },
       {
-        question: "What are your most popular treats?",
+        question: "What's on the menu?",
         answer:
-          "Our top sellers are Cinnamon Bagel Crisps, Cheesecake Cookie Cups, and layered dessert Parfaits. We also make Biscoff, Cookies & Cream, and S'mores parfaits and a rotating lineup of homemade cookies.",
+          "Chocolate Chip, Fruity Pebble, White Chocolate Macadamia Nut, and Churro cookies; Oreo, Cookie Butter, and Strawberry Shortcake parfaits; Cheesecake Cookie Cups and Brownie Cheesecake Cups; and Cinnamon Bagel Crisps.",
       },
       {
         question: "How far in advance should I order?",
         answer:
-          "As early as you can — popular dates fill up quickly. Reach out with your date and we'll confirm availability right away.",
+          "As early as you can. Lala's Sweets takes a limited number of orders each month, so send your date and we'll tell you right away whether there's room.",
       },
       {
         question: "Do your treats contain allergens?",
@@ -731,9 +805,9 @@ export const CATERING_PAGE_CONTENT: CateringPageContent = {
     ],
   },
   ctaBand: {
-    heading: "Let's make your event a little sweeter.",
+    heading: "Have a date in mind?",
     paragraph:
-      "Popular dates fill up quickly — reach out early so we can save your spot.",
+      "Orders are limited each month, so send your date and guest count early.",
     primaryCta: { label: "Request a Catering Quote", href: cateringInquiryHref() },
     showPhone: true,
   },
@@ -751,14 +825,13 @@ export interface AboutPageContent {
 export const ABOUT_PAGE_CONTENT: AboutPageContent = {
   hero: {
     eyebrow: `About Lala's Sweets · ${SITE.address.locality}`,
-    heading: "Baked with love,",
-    headingAccent: "shared with joy.",
+    heading: `Homemade in ${SITE.address.locality},`,
+    headingAccent: `shared across ${SITE.address.island}.`,
     paragraph: SITE.mission,
   },
   ctaBand: {
-    heading: "Let's share something sweet together.",
-    paragraph:
-      "Whether it's a single treat or a full dessert table, we'd love to be part of your celebration.",
+    heading: "Want to place an order?",
+    paragraph: "Tell us what you're craving and when you need it.",
     primaryCta: { label: "Start an Order", href: "/contact" },
     showPhone: true,
   },
@@ -803,6 +876,21 @@ export interface ContactFormContent {
   privacyNote: { text: string; linkLabel: string; href: string };
   success: { heading: string; description: string; resetLabel: string };
   error: { heading: string; description: string };
+  validation: {
+    heading: string;
+    name: string;
+    email: string;
+    phone: string;
+    inquiryType: string;
+    product: string;
+    eventDate: string;
+    message: string;
+  };
+  rateLimit: {
+    // "{seconds}" is replaced with the time left before another send.
+    cooldown: string;
+    tooFast: string;
+  };
   notification: { subjectPrefix: string; fromName: string };
 }
 
@@ -822,10 +910,10 @@ export const INQUIRY_TYPES: SelectOption[] = [
 
 export const CONTACT_PAGE_CONTENT: ContactPageContent = {
   hero: {
-    eyebrow: "Contact",
-    heading: "Let's make something",
-    headingAccent: "sweet together.",
-    paragraph: `Ready to order, planning an event on ${SITE.address.island}, or just have a question? Send us a message below or reach out directly — we'd love to hear from you.`,
+    eyebrow: `Order & Contact · ${SITE.location}`,
+    heading: "Place an order,",
+    headingAccent: "or just say hi.",
+    paragraph: `Tell us the treats, quantities, and date below, or call or text. ${ORDER_RULES.capacity}`,
   },
   channelsHeading: "Reach us directly",
   channels: [
@@ -842,7 +930,7 @@ export const CONTACT_PAGE_CONTENT: ContactPageContent = {
       label: "Email",
       value: SITE.email,
       href: `mailto:${SITE.email}`,
-      description: "Great for catering details and event planning.",
+      description: "Good for catering details and event planning.",
       external: false,
     },
     {
@@ -850,14 +938,14 @@ export const CONTACT_PAGE_CONTENT: ContactPageContent = {
       label: "Instagram",
       value: SITE.instagram.handle,
       href: SITE.instagram.url,
-      description: "Follow for new flavors and pop-up dates.",
+      description: "New flavors and pop-up dates.",
       external: true,
     },
   ],
   form: {
     heading: "Send an inquiry",
     description:
-      "Tell us a little about what you're looking for and we'll get back to you with pricing and availability.",
+      "Tell us what you're after and we'll reply with pricing and availability.",
     fields: {
       name: { label: "Name", placeholder: "Your name" },
       email: { label: "Email", placeholder: "you@example.com" },
@@ -868,7 +956,7 @@ export const CONTACT_PAGE_CONTENT: ContactPageContent = {
       message: {
         label: "Message",
         placeholder:
-          "Share the details — quantities, guest count, flavors, pickup timing, or any questions.",
+          "Quantities, guest count, flavors, pickup timing, or any questions.",
       },
     },
     optionalLabel: "(optional)",
@@ -885,12 +973,27 @@ export const CONTACT_PAGE_CONTENT: ContactPageContent = {
     success: {
       heading: "Mahalo! Your inquiry is on its way.",
       description:
-        "We've received your message and will get back to you as soon as we can.",
+        "We've got your message and will get back to you as soon as we can.",
       resetLabel: "Send another inquiry",
     },
     error: {
       heading: "Something went wrong.",
       description: `Your message couldn't be sent. Please try again, or reach us directly at ${SITE.phone} or ${SITE.email}.`,
+    },
+    validation: {
+      heading: "Please check the highlighted fields.",
+      name: "Please enter your name.",
+      email: "Please enter a valid email address.",
+      phone: "Please enter a valid phone number, or leave it blank.",
+      inquiryType: "Please choose what we can help with.",
+      product: "Please choose a treat from the list.",
+      eventDate: "Please choose a valid date.",
+      message: "Please add a few details to your message (at least 10 characters).",
+    },
+    rateLimit: {
+      cooldown:
+        "Your last inquiry just went through. You can send another in {seconds} seconds.",
+      tooFast: "Please take a moment to look over your details, then send again.",
     },
     notification: {
       subjectPrefix: "New website inquiry",
@@ -1165,6 +1268,7 @@ export const SEO_KEYWORDS = [
   "homemade bakery Oahu",
   "custom cookie cups Oahu",
   "cheesecake cookie cups",
+  "brownie cheesecake cups",
   "dessert parfaits Oahu",
   "dessert catering Oahu",
   "local bakery catering Hawaii",
@@ -1176,10 +1280,10 @@ export const HOME_SEO: PageSeo = {
   title: `${SITE.name} | Homemade Bakery in Wahiawa, Oahu`,
   absoluteTitle: true,
   description:
-    "Homemade cheesecake cookie cups, parfaits, cinnamon bagel crisps & cookies from Wahiawa, Oahu. Custom orders, dessert catering & pop-ups. Call (808) 375-8713.",
+    "Homemade cheesecake cookie cups, parfaits, bagel crisps & cookies from Wahiawa, Oahu. Made to order for catering, party packs & pop-ups. Call (808) 375-8713.",
   og: {
-    eyebrow: `Homemade in ${SITE.location}`,
-    headline: "Cookie cups, parfaits & homemade sweets",
+    eyebrow: `Made to order in ${SITE.location}`,
+    headline: "Homemade treats, lots of love.",
     alt: `${SITE.name} — homemade bakery in ${SITE.location}`,
   },
 };
@@ -1188,10 +1292,10 @@ export const MENU_SEO: PageSeo = {
   path: "/menu",
   title: "Wahiawa Bakery Menu: Cookie Cups & Parfaits",
   description:
-    "Browse the full Lala's Sweets menu: cheesecake cookie cups, gift packs, Biscoff & s'mores parfaits, cinnamon bagel crisps, and homemade cookies in Wahiawa, Oahu.",
+    "The Lala's Sweets menu in Wahiawa, Oahu: four cookies, Oreo, cookie butter & strawberry shortcake parfaits, cheesecake cups, and cinnamon bagel crisps.",
   og: {
     eyebrow: "The Menu",
-    headline: "Cookie cups, parfaits, bagel crisps & cookies",
+    headline: "Cookies, parfaits, cheesecake cups & bagel crisps",
     alt: `The ${SITE.name} menu — homemade desserts in ${SITE.location}`,
   },
 };
@@ -1200,10 +1304,10 @@ export const CATERING_SEO: PageSeo = {
   path: "/catering",
   title: "Dessert Catering & Pop-Ups on Oahu",
   description:
-    "Homemade dessert catering on Oahu from Lala's Sweets in Wahiawa: dessert tables, party & office trays, wedding favors, and pop-ups. Request a custom quote.",
+    "Homemade dessert catering on Oahu from Lala's Sweets in Wahiawa: parfaits by the dozen, cheesecake cup party packs of 12 or 24, favors, and pop-ups.",
   og: {
     eyebrow: `Catering on ${SITE.address.island}`,
-    headline: "Dessert tables, party trays, favors & pop-ups",
+    headline: "Parfaits, party packs, favors & pop-ups",
     alt: `${SITE.name} dessert catering on ${SITE.address.island}`,
   },
 };
@@ -1226,7 +1330,7 @@ export const CONTACT_SEO: PageSeo = {
     "Order cookie cups, parfaits & homemade sweets or book dessert catering in Wahiawa, Oahu. Call or text (808) 375-8713, email, or send an inquiry online.",
   og: {
     eyebrow: "Order & Inquire",
-    headline: "Let's make something sweet together",
+    headline: "Place an order, or just say hi",
     alt: `Contact ${SITE.name}`,
   },
 };

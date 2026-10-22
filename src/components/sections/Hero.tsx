@@ -20,9 +20,11 @@ export function Hero() {
       <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 pb-20 pt-14 sm:px-8 md:pt-20 lg:grid-cols-12 lg:gap-10 lg:pb-28">
         <div className="text-center lg:col-span-6 lg:text-left">
           <Reveal y={16}>
-            <p className="inline-flex items-center gap-2 rounded-pill border border-blush-200 bg-cream-50/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-rose-700">
-              <Heart className="size-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
-              {eyebrow}
+            {/* Tighter tracking on phones keeps the location eyebrow on one
+                line at 390px instead of orphaning a word. */}
+            <p className="inline-flex items-center gap-2 rounded-pill border border-blush-200 bg-cream-50/80 px-3.5 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-rose-700 sm:px-4 sm:text-xs sm:tracking-[0.2em]">
+              <Heart className="size-3.5 shrink-0 fill-rose-500 text-rose-500" aria-hidden="true" />
+              <span className="text-balance">{eyebrow}</span>
             </p>
           </Reveal>
 

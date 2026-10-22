@@ -1,6 +1,6 @@
 "use client"; // owns form state, submission, and success/error UI
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -20,7 +20,12 @@ import {
 } from "@/lib/constants";
 import {
   EMPTY_CONTACT_FORM,
+  MIN_FILL_TIME_MS,
+  SUBMIT_COOLDOWN_MS,
+  sanitizeContactForm,
   submitContactForm,
+  validateContactForm,
+  type ContactFieldErrors,
   type ContactFormValues,
 } from "@/lib/contact";
 
@@ -34,6 +39,26 @@ interface ContactFormProps {
 }
 
 type Status = "idle" | "sending" | "success" | "error";
+
+// sessionStorage key for the last successful send, so the cooldown survives
+// a reload within the same tab.
+const LAST_SENT_KEY = "lalas-sweets:inquiry-sent-at";
+
+function readLastSent(): number {
+  try {
+    return Number(window.sessionStorage.getItem(LAST_SENT_KEY)) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function writeLastSent(timestamp: number) {
+  try {
+    window.sessionStorage.setItem(LAST_SENT_KEY, String(timestamp));
+  } catch {
+    // Storage blocked (private mode, etc.) — the in-memory cooldown still applies.
+  }
+}
 
 function initialValues(
   content: ContactFormContent,
@@ -69,19 +94,63 @@ export function ContactForm({
     initialValues(content, initialInquiry, initialProduct, initialPackage),
   );
   const [status, setStatus] = useState<Status>("idle");
+  const [errors, setErrors] = useState<ContactFieldErrors>({});
+  const [notice, setNotice] = useState<string | null>(null);
+  const mountedAt = useRef(0);
+  const lastSentAt = useRef(0);
 
-  const updateField = <K extends keyof ContactFormValues>(field: K, value: ContactFormValues[K]) =>
+  useEffect(() => {
+    mountedAt.current = Date.now();
+    lastSentAt.current = readLastSent();
+  }, []);
+
+  const updateField = <K extends keyof ContactFormValues>(field: K, value: ContactFormValues[K]) => {
     setValues((previous) => ({ ...previous, [field]: value }));
+    if (field in errors) {
+      setErrors((previous) => ({ ...previous, [field]: undefined }));
+    }
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (status === "sending") return;
+    setNotice(null);
+
+    const now = Date.now();
+    const cooldownLeft = lastSentAt.current + SUBMIT_COOLDOWN_MS - now;
+    if (cooldownLeft > 0) {
+      setNotice(
+        content.rateLimit.cooldown.replace("{seconds}", String(Math.ceil(cooldownLeft / 1000))),
+      );
+      return;
+    }
+    if (now - mountedAt.current < MIN_FILL_TIME_MS) {
+      setNotice(content.rateLimit.tooFast);
+      return;
+    }
+
+    const clean = sanitizeContactForm(values);
+    const fieldErrors = validateContactForm(clean, content.validation);
+    if (Object.keys(fieldErrors).length > 0) {
+      setValues(clean);
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
     setStatus("sending");
-    const ok = await submitContactForm(values, content);
+    const ok = await submitContactForm(clean, content);
+    if (ok) {
+      lastSentAt.current = Date.now();
+      writeLastSent(lastSentAt.current);
+    }
     setStatus(ok ? "success" : "error");
   };
 
   const handleReset = () => {
     setValues(EMPTY_CONTACT_FORM);
+    setErrors({});
+    setNotice(null);
     setStatus("idle");
   };
 
@@ -106,9 +175,10 @@ export function ContactForm({
 
   const isSending = status === "sending";
   const selectedProduct = PRODUCTS.find((item) => item.slug === values.product);
+  const hasFieldErrors = Object.values(errors).some(Boolean);
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} noValidate>
       {/* Confirms the item the visitor clicked "Inquire" on, and updates
           live if they change the "Interested in" selection. The name wraps
           rather than truncates — the whole point is confirming the item. */}
@@ -130,6 +200,9 @@ export function ContactForm({
             <span className="mt-0.5 block font-display text-xl font-semibold leading-tight text-espresso-900">
               {selectedProduct.name}
             </span>
+            {selectedProduct.orderNote && (
+              <span className="mt-1 block text-xs text-espresso-700">{selectedProduct.orderNote}</span>
+            )}
           </span>
         </div>
       )}
@@ -137,9 +210,24 @@ export function ContactForm({
       <ContactFormFields
         content={content}
         values={values}
+        errors={errors}
         onChange={updateField}
         disabled={isSending}
       />
+
+      {hasFieldErrors && (
+        <p role="alert" className="mt-6 flex gap-3 rounded-2xl border border-rose-300 bg-blush-100 p-4 text-sm font-semibold text-espresso-900">
+          <AlertCircle className="mt-0.5 size-5 shrink-0 text-rose-700" aria-hidden="true" />
+          {content.validation.heading}
+        </p>
+      )}
+
+      {notice && (
+        <p role="status" className="mt-6 flex gap-3 rounded-2xl border border-blush-200 bg-blush-50 p-4 text-sm text-espresso-700">
+          <AlertCircle className="mt-0.5 size-5 shrink-0 text-rose-600" aria-hidden="true" />
+          {notice}
+        </p>
+      )}
 
       {status === "error" && (
         <div role="alert" className="mt-6 flex gap-3 rounded-2xl border border-rose-300 bg-blush-100 p-4 text-sm text-espresso-900">

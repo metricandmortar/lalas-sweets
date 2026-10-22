@@ -1,6 +1,7 @@
 import {
   CATERING_PAGE_CONTENT,
   MENU_PAGE_CONTENT,
+  ORDER_RULES,
   PRODUCTS,
   SITE,
   SITEMAP_ROUTES,
@@ -13,7 +14,10 @@ function buildLlmsTxt() {
   const menu = MENU_PAGE_CONTENT.categories
     .map((category) => {
       const items = PRODUCTS.filter((product) => product.category === category.id)
-        .map((product) => `  - ${product.name}: ${product.shortDescription}`)
+        .map((product) => {
+          const note = product.orderNote ? ` (${product.orderNote})` : "";
+          return `  - ${product.name}: ${product.shortDescription}${note}`;
+        })
         .join("\n");
       return `- ${category.label}\n${items}`;
     })
@@ -44,7 +48,12 @@ ${SITE.name} is a homemade, made-to-order bakery in ${SITE.location}, ${SITE.add
 - Location: ${SITE.location}, ${SITE.address.regionName} (home-based; pickup details confirmed when ordering)
 - Ordering: by inquiry — pricing and availability are provided per order.
 
-## Menu
+## Ordering rules
+- Parfaits: ${ORDER_RULES.parfaits}
+- Cheesecake Cookie Cups & Brownie Cheesecake Cups: ${ORDER_RULES.cheesecakeCups}
+- ${ORDER_RULES.capacity}
+
+## Menu (${PRODUCTS.length} items)
 ${menu}
 
 ## Catering (custom quotes on ${SITE.address.island})
