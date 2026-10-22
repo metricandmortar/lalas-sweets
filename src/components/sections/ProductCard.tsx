@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ArrowRight, Heart, Package, Star } from "lucide-react";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { PhotoComingSoon } from "@/components/ui/PhotoComingSoon";
 import {
   PRODUCT_CARD_LABELS,
   PRODUCT_CATEGORIES,
@@ -22,13 +23,17 @@ export function ProductCard({ product, sizes, showCategory = true }: ProductCard
       {/* Inset photo with a cream mat, like a print tucked into a frame. */}
       <div className="p-2.5 pb-0">
         <div className="relative aspect-[4/5] overflow-hidden rounded-[1.1rem] bg-blush-100">
-          <Image
-            src={product.image.src}
-            alt={product.image.alt}
-            fill
-            sizes={sizes}
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          />
+          {product.image ? (
+            <Image
+              src={product.image.src}
+              alt={product.image.alt}
+              fill
+              sizes={sizes}
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
+          ) : (
+            <PhotoComingSoon />
+          )}
           {/* Soft bottom fade so the local-flavor badge reads on any photo */}
           <div
             aria-hidden="true"

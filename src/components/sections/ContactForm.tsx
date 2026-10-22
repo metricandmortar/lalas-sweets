@@ -12,6 +12,7 @@ import {
   BUTTON_TAP,
   buttonClassName,
 } from "@/components/ui/ButtonLink";
+import { PhotoComingSoon } from "@/components/ui/PhotoComingSoon";
 import {
   CATERING_PAGE_CONTENT,
   INQUIRY_TYPES,
@@ -185,13 +186,17 @@ export function ContactForm({
       {selectedProduct && (
         <div className="mb-6 flex items-center gap-4 rounded-2xl border border-blush-200 bg-blush-50 p-3 pr-5">
           <span className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-blush-100">
-            <Image
-              src={selectedProduct.image.src}
-              alt=""
-              fill
-              sizes="56px"
-              className="object-cover"
-            />
+            {selectedProduct.image ? (
+              <Image
+                src={selectedProduct.image.src}
+                alt=""
+                fill
+                sizes="56px"
+                className="object-cover"
+              />
+            ) : (
+              <PhotoComingSoon size="compact" />
+            )}
           </span>
           <span className="min-w-0">
             <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-rose-700">

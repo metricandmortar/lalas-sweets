@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
-import { SALES_CHANNELS, STORY_CONTENT } from "@/lib/constants";
+import { SALES_CHANNELS, STORY_CONTENT, type ProductImage } from "@/lib/constants";
 
 // Icons are presentation concerns, so they're mapped here by slug rather
 // than stored in constants.ts.
@@ -23,13 +23,17 @@ const CHANNEL_ICONS: Record<string, LucideIcon> = {
   "events-pop-ups": Tent,
 };
 
-export function StorySection() {
+interface StorySectionProps {
+  // Lets a page swap in its own photo; defaults to STORY_CONTENT.image.
+  image?: ProductImage;
+}
+
+export function StorySection({ image = STORY_CONTENT.image }: StorySectionProps) {
   const {
     eyebrow,
     heading,
     paragraphs,
     pillars,
-    image,
     channelsEyebrow,
     channelsHeading,
     cta,

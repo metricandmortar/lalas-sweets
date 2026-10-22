@@ -89,22 +89,28 @@ export function menuSchema(): JsonLd {
     name: `${SITE.name} Menu`,
     url: absolute("/menu"),
     numberOfItems: PRODUCTS.length,
-    itemListElement: PRODUCTS.map((product, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      item: {
-        "@type": "Product",
-        name: product.name,
-        description: product.orderNote
-          ? `${product.shortDescription.replace(/[.!]?$/, ".")} ${product.orderNote}`
-          : product.shortDescription,
-        image: [product.image, ...(product.gallery ?? [])].map((image) => absolute(image.src)),
-        url: absolute(`/menu#${product.category}`),
-        category: PRODUCT_CATEGORIES[product.category],
-        brand: { "@type": "Brand", name: SITE.name },
-        manufacturer: { "@id": BAKERY_ID },
-      },
-    })),
+    itemListElement: PRODUCTS.map((product, index) => {
+      const images = [product.image, ...(product.gallery ?? [])]
+        .filter((image) => image !== undefined)
+        .map((image) => absolute(image.src));
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "Product",
+          name: product.name,
+          description: product.orderNote
+            ? `${product.shortDescription.replace(/[.!]?$/, ".")} ${product.orderNote}`
+            : product.shortDescription,
+          // Omitted rather than [] for products still awaiting photos.
+          ...(images.length > 0 && { image: images }),
+          url: absolute(`/menu#${product.category}`),
+          category: PRODUCT_CATEGORIES[product.category],
+          brand: { "@type": "Brand", name: SITE.name },
+          manufacturer: { "@id": BAKERY_ID },
+        },
+      };
+    }),
   };
 }
 

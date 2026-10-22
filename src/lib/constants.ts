@@ -164,7 +164,9 @@ export interface Product {
   price?: string;
   // Packaging / minimum-order rule shown as a note on the card.
   orderNote?: string;
-  image: ProductImage;
+  // Omit until the client supplies a real photo — cards render a
+  // "Photo coming soon" tile and the item is left out of schema images.
+  image?: ProductImage;
   // Additional angles of the same item (e.g. a single-cookie close-up).
   gallery?: ProductImage[];
   isTopSeller: boolean;
@@ -227,11 +229,19 @@ export const PRODUCTS: Product[] = [
     category: "cookies",
     shortDescription:
       "The perfect soft cookie baked and coated in cinnamon sugar, bringing you all the delicious flavors of a classic churro.",
-    // Closest available photo (cinnamon cookies on a cooling rack) until a
-    // dedicated churro cookie shot is supplied.
+    // No photo yet — the client is supplying dedicated churro cookie shots.
+    isTopSeller: false,
+  },
+  {
+    slug: "cinnamon-toast-crunch-cookies",
+    name: "Cinnamon Toast Crunch Cookies",
+    category: "cookies",
+    // DRAFT — replace with the client's exact wording once she sends it.
+    shortDescription:
+      "Soft cinnamon sugar cookies topped with crunchy Cinnamon Toast Crunch cereal and a sweet vanilla glaze drizzle.",
     image: {
-      src: "/images/cookies-cinnamon-glazed.jpg",
-      alt: "Cinnamon churro-style cookies cooling on a rack at Lala's Sweets, Wahiawa",
+      src: "/images/cookies-cinnamon-toast-crunch.jpg",
+      alt: "Glazed Cinnamon Toast Crunch cookies cooling on a rack at Lala's Sweets in Wahiawa, Oahu",
       isPlaceholder: true,
     },
     isTopSeller: false,
@@ -427,6 +437,7 @@ export const PRODUCT_CARD_LABELS = {
   inquire: "Inquire",
   pricingFallback: "Pricing on request",
   topSeller: "Top Seller",
+  photoComingSoon: "Photo coming soon",
 };
 
 // Deep links into the contact form. The form reads these params to
@@ -487,7 +498,7 @@ export const FEATURED_PRODUCTS_CONTENT: FeaturedProductsContent = {
   heading: "What people order most",
   paragraph:
     "Cheesecake cookie cups, parfaits, and cinnamon bagel crisps are the ones customers ask for again. The rest of the menu is one click away.",
-  viewAllCta: { label: "See all ten treats", href: "/menu" },
+  viewAllCta: { label: "See the full menu", href: "/menu" },
 };
 
 export interface StoryPillar {
@@ -562,7 +573,7 @@ export const MENU_PAGE_CONTENT: MenuPageContent = {
     eyebrow: `The Menu · ${SITE.location}`,
     heading: "Cookies, parfaits,",
     headingAccent: "cheesecake cups & more.",
-    paragraph: `Ten treats, all homemade in ${SITE.address.locality} and made to order. Parfaits are for catering orders (12 per flavor minimum), and cheesecake cups come in packs of 4 or party packs of 12 or 24. Send an inquiry for pricing and pickup dates.`,
+    paragraph: `Every treat is homemade in ${SITE.address.locality} and made to order. Parfaits are for catering orders (12 per flavor minimum), and cheesecake cups come in packs of 4 or party packs of 12 or 24. Send an inquiry for pricing and pickup dates.`,
   },
   categoryNavLabel: "Menu categories",
   // Display order of the catalog sections and category tabs.
@@ -570,7 +581,7 @@ export const MENU_PAGE_CONTENT: MenuPageContent = {
     {
       id: "cookies",
       label: PRODUCT_CATEGORIES.cookies,
-      description: "Four flavors, baked from scratch.",
+      description: "Every flavor baked from scratch.",
     },
     {
       id: "parfaits",
@@ -790,7 +801,7 @@ export const CATERING_PAGE_CONTENT: CateringPageContent = {
       {
         question: "What's on the menu?",
         answer:
-          "Chocolate Chip, Fruity Pebble, White Chocolate Macadamia Nut, and Churro cookies; Oreo, Cookie Butter, and Strawberry Shortcake parfaits; Cheesecake Cookie Cups and Brownie Cheesecake Cups; and Cinnamon Bagel Crisps.",
+          "Chocolate Chip, Fruity Pebble, White Chocolate Macadamia Nut, Churro, and Cinnamon Toast Crunch cookies; Oreo, Cookie Butter, and Strawberry Shortcake parfaits; Cheesecake Cookie Cups and Brownie Cheesecake Cups; and Cinnamon Bagel Crisps.",
       },
       {
         question: "How far in advance should I order?",
@@ -819,6 +830,8 @@ export const CATERING_PAGE_CONTENT: CateringPageContent = {
 
 export interface AboutPageContent {
   hero: PageHeroContent;
+  // Overrides STORY_CONTENT.image so the home page keeps its own photo.
+  storyImage: ProductImage;
   ctaBand: CtaBandContent;
 }
 
@@ -828,6 +841,11 @@ export const ABOUT_PAGE_CONTENT: AboutPageContent = {
     heading: `Homemade in ${SITE.address.locality},`,
     headingAccent: `shared across ${SITE.address.island}.`,
     paragraph: SITE.mission,
+  },
+  storyImage: {
+    src: "/images/lorelai-about.jpg",
+    alt: "Lorelai Samson holding a fresh strawberry shortcake parfait at Lala's Sweets in Wahiawa, Hawaii",
+    isPlaceholder: false,
   },
   ctaBand: {
     heading: "Want to place an order?",
@@ -1292,7 +1310,7 @@ export const MENU_SEO: PageSeo = {
   path: "/menu",
   title: "Wahiawa Bakery Menu: Cookie Cups & Parfaits",
   description:
-    "The Lala's Sweets menu in Wahiawa, Oahu: four cookies, Oreo, cookie butter & strawberry shortcake parfaits, cheesecake cups, and cinnamon bagel crisps.",
+    "The Lala's Sweets menu in Wahiawa, Oahu: homemade cookies, Oreo, cookie butter & strawberry shortcake parfaits, cheesecake cups, and cinnamon bagel crisps.",
   og: {
     eyebrow: "The Menu",
     headline: "Cookies, parfaits, cheesecake cups & bagel crisps",

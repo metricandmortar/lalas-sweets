@@ -11,7 +11,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata(ABOUT_SEO);
 
 export default function AboutPage() {
-  const { hero, ctaBand } = ABOUT_PAGE_CONTENT;
+  const { hero, storyImage, ctaBand } = ABOUT_PAGE_CONTENT;
 
   return (
     <>
@@ -22,7 +22,7 @@ export default function AboutPage() {
         ])}
       />
       <PageHero {...hero} />
-      <StorySection />
+      <StorySection image={storyImage} />
       <TrustBadges />
       <CtaBand {...ctaBand} />
     </>
